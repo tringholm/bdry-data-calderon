@@ -28,7 +28,6 @@ theta = 0:h:2*pi-h;
 [model,results] = fwdProblem(meshres);
 
 % Extract boundary data from model and results
-%[N,A,H1,H2] = getBoundaryData(model,results);
 [N,A,H1,H2] = getBoundaryDataCrimeless(model,results,M);
 
 
@@ -102,10 +101,6 @@ for i = 1:num_pts
                 k_right = k;
                 cyclic_right = 0;
                 break
-%             elseif fixed_ind(k) % Stopping point is found if the index is fixed
-%                 k_right = k;
-%                 cyclic_right = 0;
-%                 break
             end
         end
         
@@ -115,9 +110,6 @@ for i = 1:num_pts
                 if zeroH_ind(k) || ~double_ind(k) || n_diff_min_ind(k) || fixed_ind(k) % Search stops if meeting undecideable point, non-double point or unlabelable
                     cyc_k_right = 0;
                     break
-%                 elseif fixed_ind(k) % Stopping point is found if the index is fixed
-%                     cyc_k_right = k;
-%                     break
                 end
             end
         else
@@ -132,10 +124,6 @@ for i = 1:num_pts
                 k_left = k;
                 cyclic_left = 0;
                 break
-%             elseif fixed_ind(k) % Stopping point is found if the index is fixed
-%                 k_left = k;
-%                 cyclic_left = 0;
-%                 break
             end
         end
         
@@ -145,9 +133,6 @@ for i = 1:num_pts
                 if zeroH_ind(k) || ~double_ind(k) || n_diff_min_ind(k) || fixed_ind(k) % Search stops if meeting undecideable point, non-double point or unlabelable
                     cyc_k_left = 0;
                     break
-%                 elseif fixed_ind(k) % Stopping point is found if the index is fixed
-%                     cyc_k_left = k;
-%                     break
                  end
             end
         else
@@ -235,13 +220,7 @@ for i = 1:num_pts
    end
 end
 
-% axis([0, 128, 0, 60])
-
-% plot3
-
-% figure; plot(sig_q2); title('After interpolation')
 plotData(theta,sig_q2,'After interpolation','\theta','\sigma','afterInterpolation')
-
 plotData(theta,smoothGauss(sig_q2),'After smoothing','\theta','\sigma','afterSmoothing')
 plotDataComp(theta,smoothGauss(sig_q2),'Comparison','\theta','\sigma','afterSmoothingComparison')
 
@@ -253,51 +232,3 @@ plotDataComp(theta,smoothGauss(sig_q2),'Comparison','\theta','\sigma','afterSmoo
 % plot(n_plus - n_minus) 
 % 
 
-
-
-%%% JUST FOR TESTING %%%
-% figure
-% pdeplot(model,'XYData',results.NodalSolution,'ZData',results.NodalSolution,'Mesh','on')
-% figure
-% x = -0.5:0.01:0.5;
-% y = x;
-% [X,Y] = meshgrid(x,y);
-% [gradx,grady] = evaluateGradient(results,X(:),Y(:));
-% 
-% gradabssq = gradx.^2 + grady.^2;
-% gradabssq = reshape(gradabssq,length(x),length(y));
-% AET = gradabssq.*c(X,Y);
-% 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% AET = reshape(AET,length(x),length(x)); 
-% figure; surf(X,Y,AET)
-
-
-% M = length(edgenodes);
-
-%%% JUST FOR TESTING %%%
-% drawArrow = @(x,y) quiver( x(1),y(1),x(2)-x(1),y(2)-y(1),0 );    
-
-% for i = 1:M-1
-%     x_e = edgecoords(1,i:i+1);
-%     y_e = edgecoords(2,i:i+1);
-%     x_mid = sum(x_e)/2;
-%     y_mid = sum(y_e)/2;
-%     plot(x_e,y_e)
-%     v = [x_e(2) - x_e(1);
-%          y_e(2) - y_e(1)];
-%     n = [v(2); -v(1)];
-% %     pause(0.1)
-%     hold on
-%     drawArrow([x_mid - n(1), x_mid + n(1)],[y_mid - n(2),y_mid + n(2)])
-% end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%% EASY CASE %%%%%%%%%%
-goodind = (abs(N) > N_thresh & abs(A) > 1E-5); 
-sig_est_q1(goodind) = sqrt(H1(goodind).^2 - N(goodind).^2)./A(goodind);
-sig_est_q1(~goodind) = -1;
-sig_est_q1 = sig_est_q1';
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

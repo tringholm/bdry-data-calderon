@@ -1,8 +1,7 @@
 function [N,A,H1,H2] = getBoundaryDataCrimeless(model,results,M)
-% Noise levels in percentages. Percentages of what? Who knows
+% Noise levels in percentages. 
 thetaNoise = 0.05;
 NNoise = 0.05;
-resultsNoise = 0.1;
 H2Noise = 0.05;
 
 disp(['Angle noise: ', num2str(thetaNoise*100), '%'])
@@ -20,10 +19,9 @@ h = 2*pi/M;
 theta = 0:h:2*pi-h;
 theta = theta + randn(size(theta))*h*thetaNoise;
 N = length(edge_midpoints);
-s = cos(pi/N); % Noise in this?
+s = cos(pi/N); 
 x = s*cos(theta);
 y = s*sin(theta);
-%results.NodalSolution = results.NodalSolution + resultsNoise*randn(size(results.NodalSolution)).*results.NodalSolution;
 [gradx,grady] = evaluateGradient(results,x,y);
 grad = [gradx grady];
 c_vals = (c(x,y))';
